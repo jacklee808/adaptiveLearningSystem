@@ -8,6 +8,7 @@ books = ['普通心理学', '心理学与生活', '认知心理学及其启示',
 nandu = [0, 1, 2]
 shuxidu = [0, 1, 2]
 jiyishijian = [1, 24, 72, 168, 720]
+op = ['追加','插入', '编辑', '删除', '修改状态', '回上层']
 
 def listFile():
     c = 1
@@ -27,7 +28,7 @@ def createFile(name, filename):
         os.system('cp /Users/jacklee/Documents/清华心理系学硕/内容/0-0.txt ' +  filename)
     elif num == 2:
         os.system('cp /Users/jacklee/Documents/清华心理系学硕/内容/0-0-0.txt ' + filename)
-
+#--
 def showFile(filename):
     f = open(filename, 'r')
     lines = f.readlines()
@@ -35,21 +36,61 @@ def showFile(filename):
     for line in lines:
         print(line)
 
-def openFile():
-    print('请输入要打开文件的编号:')
-    listFile()
-    name = input()
-    
+def getFliename(name):
     bianhao, zhang = getBianhaoZhang(name)
     index = int(bianhao) - 1
     filename = '/Users/jacklee/Documents/清华心理系学硕/内容/' + name + books[index] + '.txt'
+    return filename
 
+def openFile(name):
+    filename = getFliename(name)
     if os.path.exists(filename) == False:
         createFile(name, filename)
         
-    showFile(filename)
+    #showFile(filename)
+    f = open(filename, 'r')
+    lines = f.readlines()
 
-    return filename, bianhao, zhang
+    return filename, lines
+
+def getKeyIndex(contents):
+    L = []
+    i = 0
+    for c in contents:
+        if c[0] == '#':
+            L.append(i)
+        i = i + 1
+    return L
+
+def showOP():
+    ss = ''
+    c = 1
+    for o in op:
+        ss = ss + str(c) + '. ' + o + ';  '
+        c = c + 1
+    ss = ss[:-3] + '.'
+    print('\n' + ss)
+
+def showKey(L, contents):
+    os.system('clear')
+    c = 1
+    for i in L:
+        print(str(c) + '. ' + contents[i][1:])
+        c = c + 1
+
+def editFile():
+    os.system('clear')
+    print('请输入要编辑文件的编号:')
+    listFile()
+    name = input()
+    filename, contents = openFile(name)
+    #print(contents)
+    L = getKeyIndex(contents)
+    #print(L)
+    showKey(L, contents)
+    showOP()
+
+editFile()
 
 def ifOthers(bianhao):
     if bianhao == 4 or bianhao == 13 or bianhao == 14:
@@ -135,7 +176,7 @@ def getTongji():
     for key, value in s:
         print(key)
 
-getTongji()
+#getTongji()
 
 def writeTongji(bianhao, shijian, yeshu):
     f = open('/Users/jacklee/Documents/清华心理系学硕/各科当前学习时长.txt', 'r')
@@ -196,10 +237,6 @@ def getRightFileTime():
         elif t == 720:
             fileTime[file] = 5
     return fileTime
-
-
-
-openFile()
 
 def waitCmd():
     fileTime = getRightFileTime()
