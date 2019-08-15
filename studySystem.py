@@ -4,21 +4,78 @@ import os
 #
 #各科规划时长（可根据时间情况调整）
 times = [10080, 7200, 8640, 11520, 7200, 5760, 5760, 7200, 8640, 7200, 4320, 2880]
-books = ['普通心理学', '心理学与生活', '认知心理学及其启示', '实验心理学', '组织行为学', '人格心理学', '心理与教育测量', '现代心理与教育统计学', '发展心理学', '社会心理学', '吾心可鉴', '心理学研究方法']
+books = ['普通心理学', '心理学与生活', '认知心理学及其启示', '实验心理学', '组织行为学', '人格心理学', '心理与教育测量', '现代心理与教育统计学', '发展心理学', '社会心理学', '吾心可鉴', '心理学研究方法', '英语', '政治']
 nandu = [0, 1, 2]
 shuxidu = [0, 1, 2]
 jiyishijian = [1, 24, 72, 168, 720]
 
 def ifOthers(bianhao):
-    
     if bianhao == 4 or bianhao == 13 or bianhao == 14:
-        print('看本心理学吧！')
+        print('看本心理学吧！（请输入编号）：\n 1. 普通心理学；\n 2. 心理学与生活；\n \
+3. 认知心理学及其启示；\n \
+5. 组织行为学；\n \
+6. 人格心理学；\n \
+7. 心理与教育测量；\n \
+8. 现代心理与教育统计学；\n \
+9. 发展心理学；\n \
+10. 社会心理学；\n \
+11. 吾心可鉴；\n \
+12. 心理学研究方法。')
+        bianhao = int(input())
     else:
         print('给大脑来点儿新鲜的（请输入编号）：\n4. 实验心理学\n13. 英语\n14. 政治')
         bianhao = int(input())
     return bianhao
+#ifOthers(4)
 
-ifOthers(4)
+def getMax(bianhao, zhang):
+    f = open('/Users/jacklee/Documents/清华心理系学硕/各科知识点当前最大编号.txt', 'r')
+    lines = f.readlines()
+    strs = lines[bianhao].split(',')
+    for s in strs[1:]:
+        ss = s.split(':')
+        if int(ss[0]) == zhang:
+            print(ss[1])
+            return int(ss[1])
+    return -1
+    
+getMax(3, 8)
+
+def writeMax(bianhao, zhang):
+    f = open('/Users/jacklee/Documents/清华心理系学硕/各科知识点当前最大编号.txt', 'r')
+    lines = f.readlines()
+    f.close()
+    f = open('/Users/jacklee/Documents/清华心理系学硕/各科知识点当前最大编号.txt', 'w')
+    c = 0
+    for line in lines:
+        if c == bianhao:
+            strs = line.split(',')
+            z = 1
+            flag = 0
+            for s in strs[1:]:
+                ss = s.split(':')
+                if int(ss[0]) == zhang:
+                    strs[z] = ss[0] + ':' + str(int(ss[1]) + 1)
+                    flag = 1
+                    break
+                z = z + 1
+                
+            if flag == 0:
+                f.write(line[:-1] + ',' + str(zhang) + ':1\n')
+            else:
+                #print(strs)
+                ss = ''
+                for s in strs:
+                    ss = ss + s + ','
+                ss = ss[:-1] + '\n'
+                f.write(ss)
+        else:
+            f.write(line)
+        c = c + 1
+    f.close()
+
+writeMax(3, 7)
+        
 #按进度多少排序
 def getTongji():
     tj = {}
@@ -98,33 +155,61 @@ def getRightFileTime():
             fileTime[file] = 5
     return fileTime
 
-def createFile():
-    print('请输入编码：')
-    name = input()
-    print(name)
-    num = (len(name) - len(name.replace('-',"")))
-    index = int(name[0]) - 1
-    filename = '/Users/jacklee/Documents/清华心理系学硕/内容/' + name + books[index] + '.txt'
+def listFile():
+    c = 1
+    for book in books:
+        print(str(c) + '. ' + books[c - 1])
+        c = c + 1
 
+def getBianhaoZhang(name):
+    ss = name.split('-')
+    bianhao = int(ss[0])
+    zhang = int(ss[1])
+    return bianhao, zhang
+
+def createFile(name, filename):
+    num = (len(name) - len(name.replace('-',"")))
     if num == 1:
         os.system('cp /Users/jacklee/Documents/清华心理系学硕/内容/0-0.txt ' +  filename)
-    elif num == 1:
+    elif num == 2:
         os.system('cp /Users/jacklee/Documents/清华心理系学硕/内容/0-0-0.txt ' + filename)
-    else:
-        filename = ''
-    return filename
 
-createFile()
-fileTime = getRightFileTime()
-while True:
-    for t in times:
-        tt = int(time.time())
-        print(tt - t + 34040)
-        #if t == tt or (tt - t) % 86400 == 0:
-        #if t == tt + 34040 or (tt - t + 34040) % 86400 == 0:
-        if True:
-            #print(tt - t)
-            fileTime = getRightFileTime()
-            if fileTime:
-                print(fileTime)
-    time.sleep(1)
+def showFile(filename):
+    f = open(filename, 'r')
+    lines = f.readlines()
+    f.close()
+    for line in lines:
+        print(line)
+
+def openFile():
+    print('请输入要打开文件的编号:')
+    listFile()
+    name = input()
+    
+    bianhao, zhang = getBianhaoZhang(name)
+    index = int(bianhao) - 1
+    filename = '/Users/jacklee/Documents/清华心理系学硕/内容/' + name + books[index] + '.txt'
+
+    if os.path.exists(filename) == False:
+        createFile(name, filename)
+        
+    showFile(filename)
+
+    return filename, bianhao, zhang
+
+openFile()
+
+def waitCmd():
+    fileTime = getRightFileTime()
+    while True:
+        for t in times:
+            tt = int(time.time())
+            print(tt - t + 34040)
+            #if t == tt or (tt - t) % 86400 == 0:
+            #if t == tt + 34040 or (tt - t + 34040) % 86400 == 0:
+            if True:
+                #print(tt - t)
+                fileTime = getRightFileTime()
+                if fileTime:
+                    print(fileTime)
+        time.sleep(1)
