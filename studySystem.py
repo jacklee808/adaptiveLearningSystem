@@ -8,7 +8,9 @@ books = ['普通心理学', '心理学与生活', '认知心理学及其启示',
 nandu = [0, 1, 2]
 shuxidu = [0, 1, 2]
 jiyishijian = [1, 24, 72, 168, 720]
-op = ['追加','插入', '编辑', '删除', '修改状态', '回上层']
+op = ['追加(默认)','插入', '编辑要点', '编辑提示', '删除', '修改状态', '回上层', '回主页']
+op2 = ['追加(默认)','插入', '编辑', '删除', '修改状态', '回上层', '回主页']
+modify = ['重点', '难度', '熟悉度', '考点', '回上层', '回主页']
 
 def listFile():
     c = 1
@@ -62,10 +64,24 @@ def getKeyIndex(contents):
         i = i + 1
     return L
 
-def showOP():
+def showOP(t):
     ss = ''
     c = 1
-    for o in op:
+    p = []
+    if t == 1:
+        p = op
+    else:
+        p = op2
+    for o in p:
+        ss = ss + str(c) + '. ' + o + ';  '
+        c = c + 1
+    ss = ss[:-3] + '.'
+    print('\n' + ss)
+
+def showModify():
+    ss = ''
+    c = 1
+    for o in modify:
         ss = ss + str(c) + '. ' + o + ';  '
         c = c + 1
     ss = ss[:-3] + '.'
@@ -78,6 +94,84 @@ def showKey(L, contents):
         print(str(c) + '. ' + contents[i][1:])
         c = c + 1
 
+def writeFile(filename, contents):
+    f = open(filename, 'w')
+    for line in contents:
+        f.write(line)
+
+def appendContents(t, L, filename, contents, index):
+    print(' input content:')
+    c = input()
+    if t == 1:
+        contents.append('#' + c + '\n')
+    elif t == 3:
+        contents.insert(L[index], '*' + c + '\n')
+    else:
+        cc = 1
+        for ccc in contents[L[index]:L[index - 1]]:
+            if ccc[0] == '?':
+                cc = cc+ 1
+        contents.insert(L[index - 1] + cc, '?' + c + '\n')
+            
+    writeFile(filename, contents)
+
+def insertContents(t, L, filename, contents, index):
+    print(' input NO.:')
+    n = int(input())
+    print(' input content:')
+    c = input()
+    
+    if t == 1:
+        contents.insert(L[n -1], '#' + c + '\n')
+    elif t == 3:
+        contents.insert(L[index - 1] + n , '*' + c + '\n')
+    else:
+        print(2)
+        contents.insert(L[index - 1] + n , '？' + c + '\n')
+    
+    writeFile(filename, contents)
+
+def editContents(t, L, filename, contents, index):
+    print(' input NO.:')
+    n = int(input())
+    os.system('clear')
+    print(str(n) + '. ' + contents[L[n -1]][1:-1])
+    i = 1
+    for c in contents[L[n -1] + 1:L[n]]:
+        print(str(i) + ') ' + c[1:-1])
+        i = i + 1
+    showOP(t)
+    OP(t, L, filename, contents, n)
+    return n
+
+def OP(t, L, filename, contents, index):
+    num = input()
+    if t > 1:
+        if int(num) > 3:
+            num = str(int(num) + 1)
+        if int(num) == 3:
+            num = '9'
+    if num == '1':
+        appendContents(t, L, filename, contents, index)
+    elif num == '2':
+        insertContents(t, L, filename, contents, index)
+    elif num == '3':
+        editContents(3, L, filename, contents, index)
+    elif num == '4':
+        editContents(2, L, filename, contents, index)
+    elif num == '5':
+        None
+    elif num == '6':
+        None
+    elif num == '7':
+        None
+    elif num == '8':
+        None
+    elif num == '9':#edit
+        None
+    else:
+        appendContents(filename, contents)
+
 def editFile():
     os.system('clear')
     print('请输入要编辑文件的编号:')
@@ -88,7 +182,10 @@ def editFile():
     L = getKeyIndex(contents)
     #print(L)
     showKey(L, contents)
-    showOP()
+    showOP(1)
+    OP(1, L, filename, contents, 0)
+
+ #   showModify()
 
 editFile()
 
@@ -118,11 +215,11 @@ def getMax(bianhao, zhang):
     for s in strs[1:]:
         ss = s.split(':')
         if int(ss[0]) == zhang:
-            print(ss[1])
-            return int(ss[1])
-    return -1
+            print(ss[0] + '-' + ss[1][:-1] + '(' + strs[0] + '):')
+            return int(ss[1]), ss[0] + '-' + ss[1][:-1] + '(' + strs[0] + '):'
+    return -1, -1
     
-getMax(3, 8)
+getMax(3, 7)
 
 def writeMax(bianhao, zhang):
     f = open('/Users/jacklee/Documents/清华心理系学硕/各科知识点当前最大编号.txt', 'r')
