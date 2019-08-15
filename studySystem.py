@@ -9,6 +9,48 @@ nandu = [0, 1, 2]
 shuxidu = [0, 1, 2]
 jiyishijian = [1, 24, 72, 168, 720]
 
+def listFile():
+    c = 1
+    for book in books:
+        print(str(c) + '. ' + books[c - 1])
+        c = c + 1
+
+def getBianhaoZhang(name):
+    ss = name.split('-')
+    bianhao = int(ss[0])
+    zhang = int(ss[1])
+    return bianhao, zhang
+
+def createFile(name, filename):
+    num = (len(name) - len(name.replace('-',"")))
+    if num == 1:
+        os.system('cp /Users/jacklee/Documents/清华心理系学硕/内容/0-0.txt ' +  filename)
+    elif num == 2:
+        os.system('cp /Users/jacklee/Documents/清华心理系学硕/内容/0-0-0.txt ' + filename)
+
+def showFile(filename):
+    f = open(filename, 'r')
+    lines = f.readlines()
+    f.close()
+    for line in lines:
+        print(line)
+
+def openFile():
+    print('请输入要打开文件的编号:')
+    listFile()
+    name = input()
+    
+    bianhao, zhang = getBianhaoZhang(name)
+    index = int(bianhao) - 1
+    filename = '/Users/jacklee/Documents/清华心理系学硕/内容/' + name + books[index] + '.txt'
+
+    if os.path.exists(filename) == False:
+        createFile(name, filename)
+        
+    showFile(filename)
+
+    return filename, bianhao, zhang
+
 def ifOthers(bianhao):
     if bianhao == 4 or bianhao == 13 or bianhao == 14:
         print('看本心理学吧！（请输入编号）：\n 1. 普通心理学；\n 2. 心理学与生活；\n \
@@ -155,47 +197,7 @@ def getRightFileTime():
             fileTime[file] = 5
     return fileTime
 
-def listFile():
-    c = 1
-    for book in books:
-        print(str(c) + '. ' + books[c - 1])
-        c = c + 1
 
-def getBianhaoZhang(name):
-    ss = name.split('-')
-    bianhao = int(ss[0])
-    zhang = int(ss[1])
-    return bianhao, zhang
-
-def createFile(name, filename):
-    num = (len(name) - len(name.replace('-',"")))
-    if num == 1:
-        os.system('cp /Users/jacklee/Documents/清华心理系学硕/内容/0-0.txt ' +  filename)
-    elif num == 2:
-        os.system('cp /Users/jacklee/Documents/清华心理系学硕/内容/0-0-0.txt ' + filename)
-
-def showFile(filename):
-    f = open(filename, 'r')
-    lines = f.readlines()
-    f.close()
-    for line in lines:
-        print(line)
-
-def openFile():
-    print('请输入要打开文件的编号:')
-    listFile()
-    name = input()
-    
-    bianhao, zhang = getBianhaoZhang(name)
-    index = int(bianhao) - 1
-    filename = '/Users/jacklee/Documents/清华心理系学硕/内容/' + name + books[index] + '.txt'
-
-    if os.path.exists(filename) == False:
-        createFile(name, filename)
-        
-    showFile(filename)
-
-    return filename, bianhao, zhang
 
 openFile()
 
